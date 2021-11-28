@@ -1,0 +1,39 @@
+Dumitrescu Andrei 333CC
+
+
+Am optat pentru forkjoinpool, deoarece pot adauga taskurile initial
+si apoi sa le dau join, fara a aparea probleme in legatura cu shutdown.
+
+Implementare:
+
+In functia MAIN din Tema2 citesc din fisieruld e intrare si apoi
+creez un pool de taskuri de tip Map, in care primul task este realizat de
+coordonator. Acest coordonator (Task de tip Parser) afla dimensiunea
+fiecarui fisier si il imparte pe chunk-uri de lungime fragmentSize,
+care reprezinta fiecare un task de tip MAP.
+
+Un task de tip Map mai intai verifica daca pointerul de start si de final
+se afla in mijlocul unui cuvant. Daca se afla (si start nu este inceputul
+fisierului - pozitia 0) le muta la dreapta pana la finalul cuvantului.
+Dupa ce le muta, citeste fragmentul si il imparte in cuvinte.
+Se parcurg cuvintele si se creeaza un dictionar de aparitii in functie de
+lungimea cuvintelor si aflu si lista de cuvinte de lungime maxima.
+Un task de tip Map returneaza un obiect de tip MapAnswer cu informatiile
+necesare pentru taskurile de tip Reduce.
+
+Revenind in MAIN, acum creez un pool pentru taskurile de tip Reduce.
+
+Primul task din Pool este de tipul DivideReduce, care preia informatiile
+de la taskurile Map si le imparte pe fisiere. Apoi, pentru fiecare fisier
+se creeaza un task Reduce care initial ia fiecare dictionar de aparitii
+de la taskurile de tip MAP si le combina. Tot acum se iau toate listele
+de cuvinte maximale si se pastreaza doar cele mai lungi. Dupa realizarea
+acestui pas, se calculeaza rangul fiecarui fisier, folosind formula
+prezentata. Fiecare task de tip Reduce returneaza un obiect de tip
+ReduceAnswer.
+
+Se revine in MAIN, unde se adauga indexul fiecarui fisier obiectelor
+de tip ReduceAnswer, care au informatie fiecarui fisier. Acest index este
+folosit pentru sortare in cazul in care rangul a 2 sau mai multe fisiere
+este acelasi. Dupa ce sortez rezultatul, parcurg entry-urile si
+creez mesajul pentru fisierul de iesire pe care il afisez la final.
